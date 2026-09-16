@@ -6,110 +6,44 @@ on:
   push:
     branches:
       - main
-      - master
 
 jobs:
   build:
-    name: Build Android APK
     runs-on: ubuntu-latest
 
     steps:
 
-      # =========================
-      # CHECKOUT
-      # =========================
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # =========================
-      # FIND PROJECT
-      # =========================
-      - name: Find MAUI Project
-        id: find_project
-        shell: bash
-        run: |
-          echo "================================="
-          echo "Repository:"
-          pwd
-          echo "================================="
-
-          echo "Searching for .csproj files..."
-          find . -type f -name "*.csproj" -print
-
-          PROJECT=$(find . -type f -name "KurtDhylanMotoShopInventory.csproj" -print -quit)
-
-          if [ -z "$PROJECT" ]; then
-            echo ""
-            echo "ERROR: KurtDhylanMotoShopInventory.csproj was NOT found."
-            echo ""
-            echo "All files in repository:"
-            find . -maxdepth 4 -type f | sort
-            exit 1
-          fi
-
-          echo ""
-          echo "Project found:"
-          echo "$PROJECT"
-
-          echo "PROJECT=$PROJECT" >> "$GITHUB_OUTPUT"
-
-      # =========================
-      # JAVA
-      # =========================
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
-      # =========================
-      # .NET
-      # =========================
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: '8.0.x'
 
-      # =========================
-      # MAUI
-      # =========================
       - name: Install MAUI Android
-        run: |
-          dotnet workload install maui-android
+        run: dotnet workload install maui-android
 
-      # =========================
-      # RESTORE
-      # =========================
       - name: Restore
-        run: |
-          dotnet restore "${{ steps.find_project.outputs.PROJECT }}"
+        run: dotnet restore ./KurtDhylanMotoShopInventory.csproj
 
-      # =========================
-      # BUILD APK
-      # =========================
-      - name: Build Android APK
+      - name: Build APK
         run: |
-          dotnet publish \
-            "${{ steps.find_project.outputs.PROJECT }}" \
+          dotnet publish ./KurtDhylanMotoShopInventory.csproj \
             -f net8.0-android \
             -c Release \
             -p:AndroidPackageFormat=apk \
             --no-restore
 
-      # =========================
-      # FIND APK
-      # =========================
-      - name: Find Generated APK
-        run: |
-          echo "Generated APK files:"
-          find . -type f -name "*.apk" -print
-
-      # =========================
-      # UPLOAD APK
-      # =========================
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Kurt-Dhylan-Moto-Shop-Inventory-APK
+          name: Kurt-Dhylan-Moto-Shop-Inventory
           path: "**/*.apk"
           if-no-files-found: error
