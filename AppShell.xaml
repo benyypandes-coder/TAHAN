@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:KurtDhylanMotoShopInventory"
+       x:Class="KurtDhylanMotoShopInventory.AppShell"
+       Shell.BackgroundColor="#090909"
+       Shell.ForegroundColor="White">
+    <ShellContent Title="Inventory" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+</Shell>
